@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Piloter l'activité et la communication en production – MindCo2</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--red:#C6363D;--dark:#4A4A4A;--gray:#F2F2F2;--white:#fff}
+  body{font-family:'Open Sans',sans-serif;color:var(--dark);background:var(--white);font-size:16px;line-height:1.7}
+  h1,h2,h3,h4{font-family:'Montserrat',sans-serif}
+
+  /* NAV */
+  nav{background:var(--dark);position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+  nav ul{display:flex;justify-content:center;flex-wrap:wrap;list-style:none;gap:4px;padding:0 16px}
+  nav a{color:#fff;text-decoration:none;font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:14px 16px;display:block;transition:color .2s}
+  nav a:hover,nav a:focus{color:var(--red)}
+
+  /* HERO */
+  #hero{background:linear-gradient(135deg,#1a1a1a 0%,#3a1012 50%,var(--red) 100%);color:#fff;padding:80px 24px 64px;text-align:center;position:relative;overflow:hidden}
+  #hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+  .logo-wrap{margin-bottom:28px}
+  .logo-wrap img{max-height:70px;filter:brightness(0) invert(1)}
+  .logo-placeholder{display:inline-block;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);border-radius:8px;padding:12px 28px;font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.4rem;color:#fff;letter-spacing:.06em}
+  #hero h1{font-size:clamp(1.6rem,4vw,2.8rem);font-weight:800;line-height:1.2;margin-bottom:16px;text-transform:uppercase;letter-spacing:.03em}
+  #hero h1 span{color:#ffb3b5}
+  #hero .subtitle{font-size:clamp(.95rem,2vw,1.15rem);opacity:.9;max-width:680px;margin:0 auto 32px;font-weight:400}
+  .hero-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:36px}
+  .tag{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:6px 18px;font-size:.82rem;font-family:'Montserrat',sans-serif;font-weight:600;color:#fff}
+  .btn{display:inline-block;background:var(--white);color:var(--red);font-family:'Montserrat',sans-serif;font-weight:700;font-size:.9rem;padding:14px 32px;border-radius:4px;text-decoration:none;transition:all .2s;letter-spacing:.04em;text-transform:uppercase}
+  .btn:hover{background:var(--red);color:#fff;transform:translateY(-2px);box-shadow:0 4px 16px rgba(198,54,61,.4)}
+  .btn-outline{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.6);margin-left:12px}
+  .btn-outline:hover{background:#fff;color:var(--dark)}
+
+  /* SECTIONS */
+  section{padding:72px 24px}
+  .container{max-width:1000px;margin:0 auto}
+  .section-label{display:inline-block;background:var(--red);color:#fff;font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 14px;border-radius:2px;margin-bottom:14px}
+  .section-title{font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--dark);margin-bottom:8px;line-height:1.25}
+  .section-title em{color:var(--red);font-style:normal}
+  .section-sub{color:#777;max-width:640px;margin-bottom:40px}
+  .divider{width:48px;height:4px;background:var(--red);border-radius:2px;margin:16px 0 32px}
+
+  /* INFOS PRATIQUES */
+  #infos{background:var(--gray)}
+  .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px}
+  .info-card{background:#fff;border-radius:8px;padding:28px 24px;box-shadow:0 2px 12px rgba(0,0,0,.07);border-top:4px solid var(--red);text-align:center}
+  .info-icon{font-size:2rem;margin-bottom:12px}
+  .info-card h3{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--red);margin-bottom:8px}
+  .info-card p{font-size:.92rem;color:var(--dark)}
+
+  /* OBJECTIFS */
+  #objectifs{background:#fff}
+  .obj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+  .obj-item{display:flex;gap:16px;align-items:flex-start;padding:20px;border-radius:8px;background:var(--gray);border-left:4px solid var(--red)}
+  .obj-num{font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.6rem;color:var(--red);line-height:1;min-width:32px}
+  .obj-text{font-size:.93rem}
+
+  /* PROGRAMME ACCORDÉON */
+  #programme{background:var(--gray)}
+  .accordion{border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07)}
+  .acc-item{background:#fff;border-bottom:1px solid #eaeaea}
+  .acc-item:last-child{border-bottom:none}
+  .acc-btn{width:100%;text-align:left;background:none;border:none;padding:20px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:.95rem;color:var(--dark);transition:background .2s}
+  .acc-btn:hover{background:#fff8f8}
+  .acc-btn .badge{background:var(--red);color:#fff;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:12px;white-space:nowrap;font-family:'Open Sans',sans-serif}
+  .acc-arrow{font-size:1rem;color:var(--red);transition:transform .3s;flex-shrink:0}
+  .acc-btn.open .acc-arrow{transform:rotate(180deg)}
+  .acc-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+  .acc-body.open{max-height:600px}
+  .acc-inner{padding:0 24px 24px;font-size:.91rem;color:#555}
+  .acc-inner ul{padding-left:20px;margin-top:8px}
+  .acc-inner li{margin-bottom:6px}
+  .acc-inner .modality{display:inline-block;margin-top:12px;font-size:.78rem;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.06em;border-top:1px solid #eee;padding-top:10px;width:100%}
+
+  /* FORMAT */
+  #format{background:#fff}
+  .format-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+  .format-card{background:var(--gray);border-radius:8px;padding:28px 22px;text-align:center;position:relative;overflow:hidden}
+  .format-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--red)}
+  .format-card .big{font-family:'Montserrat',sans-serif;font-size:2.2rem;font-weight:800;color:var(--red);line-height:1}
+  .format-card h4{font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--dark);margin:8px 0 6px}
+  .format-card p{font-size:.85rem;color:#777}
+
+  /* VIDÉO */
+  #video{background:var(--dark);text-align:center;padding:72px 24px}
+  #video .section-title{color:#fff}
+  #video .section-sub{color:#aaa;margin:0 auto 36px}
+  .video-wrap{position:relative;padding-bottom:56.25%;height:0;max-width:720px;margin:0 auto;border-radius:8px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+  .video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+
+  /* CARTE */
+  #lieu{background:var(--gray)}
+  .map-wrap{border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.1);height:380px}
+  .map-wrap iframe{width:100%;height:100%;border:0}
+
+  /* TÉLÉCHARGEMENTS */
+  #docs{background:#fff}
+  .dl-grid{display:flex;flex-wrap:wrap;gap:16px}
+  .dl-btn{display:flex;align-items:center;gap:12px;background:var(--gray);border:2px solid #e0e0e0;border-radius:8px;padding:18px 24px;text-decoration:none;color:var(--dark);font-family:'Montserrat',sans-serif;font-weight:700;font-size:.88rem;transition:all .25s}
+  .dl-btn:hover{border-color:var(--red);background:#fff8f8;color:var(--red);transform:translateY(-2px)}
+  .dl-icon{font-size:1.8rem}
+
+  /* FOOTER */
+  footer{background:#1a1a1a;color:#bbb;padding:48px 24px 32px;text-align:center}
+  .footer-logo{font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.4rem;color:#fff;margin-bottom:16px}
+  .footer-logo span{color:var(--red)}
+  footer p{font-size:.85rem;line-height:1.8;margin-bottom:6px}
+  footer a{color:#e87a7f;text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  .footer-sep{width:40px;height:3px;background:var(--red);margin:24px auto}
+  .footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:16px;margin-top:16px}
+  .footer-links a{font-size:.8rem;color:#999;text-decoration:none}
+  .footer-links a:hover{color:var(--red)}
+
+  @media(max-width:600px){
+    .btn-outline{margin-left:0;margin-top:10px}
+    #hero .btns{display:flex;flex-direction:column;align-items:center;gap:10px}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav role="navigation" aria-label="Navigation principale">
+  <ul>
+    <li><a href="#infos">Infos pratiques</a></li>
+    <li><a href="#objectifs">Objectifs</a></li>
+    <li><a href="#programme">Programme</a></li>
+    <li><a href="#format">Format</a></li>
+    <li><a href="#video">Vidéo</a></li>
+    <li><a href="#lieu">Lieu</a></li>
+    <li><a href="#docs">Documents</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header id="hero" role="banner">
+  <div class="logo-wrap">
+    <img src="logo.png" alt="Logo MindCo2" onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='inline-block'">
+    <span id="logo-fallback" class="logo-placeholder" style="display:none">MindCo<span style="color:#ffb3b5">2</span></span>
+  </div>
+  <h1>Piloter <span>l'activité</span> et la communication<br>en production</h1>
+  <p class="subtitle">Un accompagnement concret pour développer votre posture managériale, fluidifier vos échanges en atelier et installer des routines durables — sans quitter votre poste.</p>
+  <div class="hero-tags">
+    <span class="tag">📍 Carquefou (44)</span>
+    <span class="tag">⏱ 21 heures</span>
+    <span class="tag">🎯 Présentiel + Distanciel</span>
+    <span class="tag">✅ Qualiopi</span>
+  </div>
+  <div class="btns">
+    <a href="#programme" class="btn">Découvrir le programme</a>
+    <a href="#docs" class="btn btn-outline">Télécharger les documents</a>
+  </div>
+</header>
+
+<!-- INFOS PRATIQUES -->
+<section id="infos" aria-labelledby="h-infos">
+  <div class="container">
+    <span class="section-label">Infos pratiques</span>
+    <h2 class="section-title" id="h-infos">Tout ce que vous devez <em>savoir</em></h2>
+    <div class="divider"></div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-icon">📅</div>
+        <h3>Date</h3>
+        <p>Session en cours<br>Hier – 3ter avenue des Villages<br>44470 Carquefou</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">⏱</div>
+        <h3>Durée</h3>
+        <p>21 heures<br>réparties sur plusieurs<br>demi-journées</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">👤</div>
+        <h3>Public</h3>
+        <p>Animatrice ou animateur<br>de production / d'équipes<br>en industrie</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🎓</div>
+        <h3>Formateur</h3>
+        <p>Françoise Calmels<br>Consultante en management<br>MindCo2</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">📋</div>
+        <h3>Prérequis</h3>
+        <p>Exercer un rôle de coordination en atelier &amp; disposer d'un smartphone ou ordinateur</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🏆</div>
+        <h3>Certification</h3>
+        <p>Certificat de réalisation<br>délivré à l'issue<br>de la formation</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OBJECTIFS -->
+<section id="objectifs" aria-labelledby="h-objectifs">
+  <div class="container">
+    <span class="section-label">Objectifs pédagogiques</span>
+    <h2 class="section-title" id="h-objectifs">À l'issue de la formation,<br>vous serez capable de…</h2>
+    <div class="divider"></div>
+    <div class="obj-grid">
+      <div class="obj-item">
+        <div class="obj-num">01</div>
+        <p class="obj-text">Analyser une situation managériale vécue en atelier en distinguant faits, intentions et effets.</p>
+      </div>
+      <div class="obj-item">
+        <div class="obj-num">02</div>
+        <p class="obj-text">Identifier vos automatismes de communication dans des situations de tension et définir une alternative opérationnelle.</p>
+      </div>
+      <div class="obj-item">
+        <div class="obj-num">03</div>
+        <p class="obj-text">Structurer et transmettre des consignes claires, et vérifier leur compréhension sans mise en difficulté.</p>
+      </div>
+      <div class="obj-item">
+        <div class="obj-num">04</div>
+        <p class="obj-text">Reconnaître et gérer des situations managériales à risque avec discernement et méthode.</p>
+      </div>
+      <div class="obj-item">
+        <div class="obj-num">05</div>
+        <p class="obj-text">Formaliser un plan d'action à 30 jours comprenant 3 actions, 3 indicateurs et 2 modalités de suivi.</p>
+      </div>
+      <div class="obj-item">
+        <div class="obj-num">06</div>
+        <p class="obj-text">Installer des routines managériales durables pour réguler l'activité sans surcontrôle.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMME ACCORDÉON -->
+<section id="programme" aria-labelledby="h-programme">
+  <div class="container">
+    <span class="section-label">Programme</span>
+    <h2 class="section-title" id="h-programme">Contenu de la <em>formation</em></h2>
+    <p class="section-sub">7 compétences clés travaillées en profondeur, ancrées dans vos situations réelles d'atelier.</p>
+    <div class="divider"></div>
+    <p style="margin-bottom:20px;font-size:.88rem;color:#999">Cliquez sur une compétence pour en voir le détail</p>
+    <div class="accordion" role="list">
+
+      <!-- C1 -->
+      <div class="acc-item" role="listitem">
+        <button class="acc-btn" aria-expanded="false" onclick="toggle(this)">
+          <span>C1 – Analyser sa pratique managériale en situation réelle</span>
+          <span style="display:flex;align-items:center;gap:10px">
+            <span class="badge">Présentiel</span>
+            <span class="acc-arrow">▼</span>
+          </span>
+        </button>
+        <div class="acc-body" role="region">
+          <div class="acc-inner">
+            <ul>
+              <li>Différencier faits observables, intentions supposées et effets produits sur l'équipe</li>
+              <li>Lecture d'une situation managériale vécue (brief, consigne, tension, arbitrage)</li>
+              <li>Grille simple d'analyse de pratique adaptée au contexte industriel</li>
+              <li>Mise en lien entre posture managériale, décisions et réactions de l'équipe</li>
+              <li>Formalisation d'enseignements opérationnels directement transposables</li>
+            </ul>
+            <span class="modality">🕐 Demi-journée présentielle 1 – 9h00 / 12h30</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- C2 -->
+      <div class="acc-item" role="listitem">
+        <button class="acc-btn" aria-expanded="false" onclick="toggle(this)">
+          <span>C2 – Identifier ses automatismes de communication sous tension</span>
+          <span style="display:flex;align-items:center;gap:10px">
+            <span class="badge">Présentiel + Lumina Spark</span>
+            <span class="acc-arrow">▼</span>
+          </span>
+        </button>
+        <div class="acc-body" role="region">
+          <div class="acc-inner">
+            <ul>
+              <li>Identification des réflexes de communication en situation de pression (mots, ton, posture, timing)</li>
+              <li>Effets des automatismes sur la compréhension, l'engagement et la coopération</li>
+              <li>Repérage des écarts entre intention managériale et perception terrain</li>
+              <li>Alternatives simples et réalistes pour ajuster sa communication</li>
+              <li>Découverte du profil <strong>Lumina Spark</strong> — outil de connaissance de soi et d'adaptation relationnelle</li>
+            </ul>
+            <span class="modality">🕐 Demi-journée présentielle 2 – 9h00 / 12h30</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- C3 -->
+      <div class="acc-item" role="listitem">
+        <button class="acc-btn" aria-expanded="false" onclick="toggle(this)">
+          <span>C3 – Structurer et transmettre des consignes claires</span>
+          <span style="display:flex;align-items:center;gap:10px">
+            <span class="badge">Présentiel</span>
+            <span class="acc-arrow">▼</span>
+          </span>
+        </button>
+        <div class="acc-body" role="region">
+          <div class="acc-inner">
+            <ul>
+              <li>Principes clés d'une consigne claire et opérationnelle en atelier</li>
+              <li>Structuration courte : objectif, attendu, point de vigilance, contrôle</li>
+              <li>Techniques de vérification de compréhension sans mise en difficulté</li>
+              <li>Adaptation selon les profils, le contexte et l'urgence</li>
+              <li>Construction de scripts de consignes réutilisables</li>
+            </ul>
+            <span class="modality">🕐 Demi-journée présentielle 2 – séquence dédiée</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- C4 -->
+      <div class="acc-item" role="listitem">
+        <button class="acc-btn" aria-expanded="false" onclick="toggle(this)">
+          <span>C4 – Clarifier l'interface animatrice / chefs de ligne</span>
+          <span style="display:flex;align-items:center;gap:10px">
+            <span class="badge">Présentiel</span>
+            <span class="acc-arrow">▼</span>
+          </span>
+        </button>
+        <div class="acc-body" role="region">
+          <div class="acc-inner">
+            <ul>
+              <li>Clarification des rôles, responsabilités et zones de décision respectives</li>
+              <li>Analyse des zones de flou et de friction dans la coordination quotidienne</li>
+              <li>Définition de règles de fonctionnement et de relais d'information</li>
+              <li>Ajustement de la posture d'interface de l'animatrice</li>
+              <li>Préparation de messages clairs pour sécuriser les interactions transverses</li>
+            </ul>
+            <span class="modality">🕐 Demi-journée présentielle 2 – 9h00 / 12h30</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- C5 -->
+      <div class="acc-item" role="listitem">
+        <button class="acc-btn" aria-expanded="false" onclick="toggle(this)">
+          <span>C5 – Reconnaître les situations à risque et agir avec discernement</span>
+          <span style="display:flex;align-items:center;gap:10px">
+            <span class="badge">Micro-learning + Présentiel</span>
+            <span class="acc-arrow">▼</span>
+          </span>
+        </button>
+        <div class="acc-body" role="region">
+          <div class="acc-inner">
+            <ul>
+              <li>Identification des situations à risque (humaines, organisationnelles, relationnelles)</li>
+              <li>Repérage des signaux faibles et des indicateurs d'alerte</li>
+              <li>Priorisation : traiter maintenant / différer / escalader</li>
+              <li>Actions managériales proportionnées au contexte</li>
+              <li>Prévention des escalades et tensions répétitives</li>
+            </ul>
+            <span class="modality">🕐 Demi-journée présentielle 3 – 9h00 / 12h30 + Micro-learning asynchrones</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- C6 -->
+      <div class="acc-item" role="listitem">
+        <button class="acc-btn" aria-expanded="false" onclick="toggle(this)">
+          <span>C6 – Réguler l'activité de l'équipe au quotidien</span>
+          <span style="display:flex;align-items:center;gap:10px">
+            <span class="badge">Présentiel + Terrain</span>
+            <span class="acc-arrow">▼</span>
+          </span>
+        </button>
+        <div class="acc-body" role="region">
+          <div class="acc-inner">
+            <ul>
+              <li>Principes de régulation sans surcontrôle</li>
+              <li>Mise en place de routines d'arbitrage simples et efficaces</li>
+              <li>Ajustement de l'activité face aux aléas humains et techniques</li>
+              <li>Scénarios courts de régulation (brief, recadrage, réajustement)</li>
+              <li>Développement d'une posture de pilotage réaliste et soutenable</li>
+            </ul>
+            <span class="modality">🕐 Demi-journée présentielle 3 – 9h00 / 12h30</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- C7 -->
+      <div class="acc-item" role="listitem">
+        <button class="acc-btn" aria-expanded="false" onclick="toggle(this)">
+          <span>C7 – Formaliser un retour réflexif et ancrer un plan d'action 30 jours</span>
+          <span style="display:flex;align-items:center;gap:10px">
+            <span class="badge">AFEST + Débrief</span>
+            <span class="acc-arrow">▼</span>
+          </span>
+        </button>
+        <div class="acc-body" role="region">
+          <div class="acc-inner">
+            <ul>
+              <li>Structuration d'un retour réflexif à partir de situations vécues</li>
+              <li>Capitalisation des apprentissages issus de l'expérience terrain</li>
+              <li>Élaboration d'un plan d'action à 30 jours, réaliste et mesurable</li>
+              <li>Définition de petits pas et d'indicateurs simples de suivi</li>
+              <li>Installation de routines managériales durables</li>
+            </ul>
+            <span class="modality">🕐 Demi-journée présentielle 4 – 9h00 / 12h30 — séquence AFEST légère</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FORMAT -->
+<section id="format" aria-labelledby="h-format">
+  <div class="container">
+    <span class="section-label">Format de l'accompagnement</span>
+    <h2 class="section-title" id="h-format">Un dispositif <em>hybride</em> pensé pour l'atelier</h2>
+    <div class="divider"></div>
+    <div class="format-grid">
+      <div class="format-card">
+        <div class="big">14h</div>
+        <h4>Présentiel synchrone</h4>
+        <p>4 demi-journées de 3h30 en face-à-face</p>
+      </div>
+      <div class="format-card">
+        <div class="big">3h</div>
+        <h4>Coaching distanciel</h4>
+        <p>2 séances flash de 1h30 via Zoom</p>
+      </div>
+      <div class="format-card">
+        <div class="big">4h</div>
+        <h4>Micro-learning</h4>
+        <p>8 modules asynchrones de 30 min max</p>
+      </div>
+      <div class="format-card">
+        <div class="big">21h</div>
+        <h4>Total</h4>
+        <p>Un parcours complet, sans immobiliser l'atelier</p>
+      </div>
+    </div>
+    <div style="margin-top:32px;background:var(--gray);border-left:4px solid var(--red);border-radius:0 8px 8px 0;padding:20px 24px">
+      <p style="font-size:.92rem"><strong>Outils utilisés :</strong> Plateforme Digiforma (supports + e-learning), Zoom (visioconférences), supports remis en version numérique et/ou papier avec versions adaptées sur demande.<br><br>
+      <strong>Accessibilité :</strong> Supports en police sans empattement, contrastes élevés, consignes courtes, audio possible, simulations verbales uniquement (compatible PMR). Contactez notre référent handicap pour toute adaptation : <a href="mailto:laurent.girard@mindco2.fr" style="color:var(--red)">laurent.girard@mindco2.fr</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- VIDÉO -->
+<section id="video">
+  <span class="section-label" style="background:#fff;color:var(--red)">Mot du formateur</span>
+  <h2 class="section-title" style="color:#fff;margin-top:12px">Découvrez l'approche <em style="color:#e87a7f">MindCo2</em></h2>
+  <p class="section-sub">Françoise Calmels vous présente la démarche et l'état d'esprit de cet accompagnement.</p>
+  <div class="video-wrap">
+    <iframe src="https://www.youtube.com/embed/QL2e24CZC4U" title="Présentation de la formation MindCo2" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+  </div>
+</section>
+
+<!-- LIEU -->
+<section id="lieu" aria-labelledby="h-lieu">
+  <div class="container">
+    <span class="section-label">Lieu de formation</span>
+    <h2 class="section-title" id="h-lieu">Où se déroule <em>la formation ?</em></h2>
+    <div class="divider"></div>
+    <p style="margin-bottom:24px;font-size:.95rem">📍 <strong>3ter avenue des Villages – 44470 Carquefou</strong></p>
+    <div class="map-wrap">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2705.0!2d-1.4896!3d47.3097!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2s3ter+avenue+des+Villages%2C+44470+Carquefou!5e0!3m2!1sfr!2sfr!4v1700000000000" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Carte du lieu de formation"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- DOCUMENTS -->
+<section id="docs" aria-labelledby="h-docs">
+  <div class="container">
+    <span class="section-label">Documents</span>
+    <h2 class="section-title" id="h-docs">Télécharger les <em>ressources</em></h2>
+    <div class="divider"></div>
+    <p class="section-sub">Retrouvez ici tous les documents de la formation disponibles en téléchargement.</p>
+    <div class="dl-grid">
+      <a href="programme.pdf" class="dl-btn" download aria-label="Télécharger le programme de formation PDF">
+        <span class="dl-icon">📄</span>
+        <div>
+          <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:#999;margin-bottom:2px">PDF</div>
+          Programme de formation
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="contact" role="contentinfo">
+  <div class="footer-logo">Mind<span>Co2</span></div>
+  <p>Conseil · Coaching · Formation</p>
+  <div class="footer-sep"></div>
+  <p>📧 <a href="mailto:mickael.loeuille@gmail.com">mickael.loeuille@gmail.com</a></p>
+  <p>📞 <a href="tel:+33681255388">06 81 25 53 88</a></p>
+  <p style="margin-top:10px">S.A.S. MindCo2 – 47 Place Alphonse Fiquet – CS 30047 – 80011 Amiens cedex</p>
+  <p>SIRET : 891 241 671 00041 – APE : 7022Z</p>
+  <div class="footer-links">
+    <a href="https://mindco2.fr/formulaire-contact-mindco2/" target="_blank" rel="noopener">Politique d'inclusion et gestion du handicap</a>
+    <a href="https://mindco2.fr/" target="_blank" rel="noopener">mindco2.fr</a>
+    <a href="https://www.linkedin.com/in/francoise-calmelsmindco2/" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+  <p style="margin-top:28px;font-size:.75rem;color:#666">© 2026 MindCo2 – Tous droits réservés – Document à usage pédagogique</p>
+</footer>
+
+<script>
+function toggle(btn){
+  const body = btn.nextElementSibling;
+  const isOpen = btn.classList.contains('open');
+  // ferme tous
+  document.querySelectorAll('.acc-btn.open').forEach(b=>{
+    b.classList.remove('open');
+    b.setAttribute('aria-expanded','false');
+    b.nextElementSibling.classList.remove('open');
+  });
+  if(!isOpen){
+    btn.classList.add('open');
+    btn.setAttribute('aria-expanded','true');
+    body.classList.add('open');
+  }
+}
+</script>
+</body>
+</html>
